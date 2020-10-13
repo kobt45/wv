@@ -55,14 +55,6 @@
             <data android:scheme="https" android:host="2rerz-alternate.app.link" />
         </intent-filter>
         </activity>
-        <activity android:name=".Main3Activity" />
-        <activity android:name=".Main4Activity" />
-        <activity android:name=".Main5Activity" />
-        <activity android:name=".MainWV" >
-
-
-
-        </activity>
 
     </application>
 

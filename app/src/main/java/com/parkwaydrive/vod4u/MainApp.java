@@ -22,8 +22,6 @@ import io.branch.referral.util.LinkProperties;
 
 public class MainApp extends AppCompatActivity {
 
-    String t2 = "";
-    int x = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,34 +29,6 @@ public class MainApp extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-//        while (x != 0 && x != 1) {
-//            try {
-//                t2 = new fetchData2().execute().get();
-//                x = t2.charAt(0) - '0';
-//                //char c = t2.charAt(0);
-//
-//
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            } catch (ExecutionException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//        if (x == 0) {
-//            try {
-//                Intent k = new Intent(MainApp.this, MainActivity.class);
-//                startActivity(k);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        } else {
-//            try {
-//                Intent k = new Intent(MainApp.this, MainWV.class);
-//                startActivity(k);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        }
     }
 
     @Override public void onStart() {
@@ -94,34 +64,6 @@ public class MainApp extends AppCompatActivity {
             e.printStackTrace();
         }
 
-//        while (x != 0 && x != 1) {
-//            try {
-//                t2 = new fetchData2().execute().get();
-//                x = t2.charAt(0) - '0';
-//                //char c = t2.charAt(0);
-//
-//
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            } catch (ExecutionException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//        if (x == 0) {
-//            try {
-//                Intent k = new Intent(MainApp.this, MainActivity.class);
-//                startActivity(k);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        } else {
-//            try {
-//                Intent k = new Intent(MainApp.this, MainWV.class);
-//                startActivity(k);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        }
     }
     @Override
     protected void onNewIntent(Intent intent) {
