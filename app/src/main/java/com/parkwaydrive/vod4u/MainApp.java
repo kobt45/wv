@@ -1,88 +1,114 @@
 package com.parkwaydrive.vod4u;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.concurrent.ExecutionException;
 
-import org.json.JSONObject;
-
 import io.branch.indexing.BranchUniversalObject;
 import io.branch.referral.Branch;
+import io.branch.referral.Branch.BranchReferralInitListener;
 import io.branch.referral.BranchError;
 import io.branch.referral.util.LinkProperties;
 
-
-
 public class MainApp extends AppCompatActivity {
 
+    String t2 = "";
+    int x = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        ProgressDialog dialog = ProgressDialog.show(MainApp.this, "", "Loading...", true);
 
+        Branch.getInstance().setIdentity("844169986787267145");
+        Branch.getInstance().enableFacebookAppLinkCheck();
     }
 
-    @Override public void onStart() {
+
+    @Override
+    protected void onStart() {
         super.onStart();
-        try {
-            Branch.sessionBuilder(this).withCallback(new Branch.BranchReferralInitListener() {
-                @Override
-                public void onInitFinished(JSONObject referringParams, BranchError error) {
-                    if (error == null) {
+        Branch.getInstance().initSession(new Branch.BranchUniversalReferralInitListener() {
+            @Override
+            public void onInitFinished(BranchUniversalObject branchUniversalObject, LinkProperties linkProperties, BranchError error) {
+                if (error != null) {
+                    Log.i("BranchTestBed", "branch init failed. Caused by -" + error.getMessage());
+                } else {
+                    Log.i("BranchTestBed", "branch init complete!");
+                    if (branchUniversalObject != null) {
+                        Log.i("BranchTestBed", "title " + branchUniversalObject.getTitle());
+                        Log.i("BranchTestBed", "CanonicalIdentifier " + branchUniversalObject.getCanonicalIdentifier());
+                        Log.i("ContentMetaData", "metadata " + branchUniversalObject.getContentMetadata().convertToJson());
 
-//                        // option 1: log data
-//                        Log.i("BRANCH SDK", referringParams.toString());
-//
-//                        // option 2: save data to be used later
-//                        SharedPreferences preferences = MainApp.this.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE);
-//                        preferences.edit().putString("branchData", referringParams.toString()).apply();
-
-                        // option 3: navigate to page
-                        Intent intent = new Intent(MainApp.this, Main2Activity.class);
-                        startActivity(intent);
-
-//                        // option 4: display data
-//                        Toast.makeText(MainApp.this, referringParams.toString(), Toast.LENGTH_LONG).show();
-
-                    } else {
-                        Log.i("BRANCH SDK", error.getMessage());
+                    }
+                    if (linkProperties != null) {
+                        Log.i("BranchTestBed", "Channel " + linkProperties.getChannel());
+                        Log.i("BranchTestBed", "control params " + linkProperties.getControlParams());
                     }
                 }
-            }).withData(this.getIntent().getData()).init();
 
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+
+                // QA purpose only
+                // TrackingControlTestRoutines.runTrackingControlTest(MainActivity.this);
+                // BUOTestRoutines.TestBUOFunctionalities(MainActivity.this);
+
+            }
+        }, this.getIntent().getData(), this);
+
+        // Branch integration validation: Validate Branch integration with your app
+        // NOTE : The below method will run few checks for verifying correctness of the Branch integration.
+        // Please look for "BranchSDK_Doctor" in the logcat to see the results.
+        // IMP : Do not make this call in your production app
+
+        //IntegrationValidator.validate(MainApp.this);
 
     }
+
     @Override
-    protected void onNewIntent(Intent intent) {
+    public void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        try {
-            setIntent(intent);
-            // if activity is in foreground (or in backstack but partially visible) launching the same
-            // activity will skip onStart, handle this case with reInitSession
-            Branch.sessionBuilder(this).withCallback(branchReferralInitListener).reInit();
-        }
-        catch (Exception ignored) { }
-
+        this.setIntent(intent);
+        Branch.getInstance().reInitSession(this, new BranchReferralInitListener() {
+            @Override
+            public void onInitFinished(JSONObject referringParams, BranchError error) {
+                if (error != null) {
+                    Log.i("BranchTestBed", error.getMessage());
+                } else if (referringParams != null) {
+                    Log.i("BranchTestBed", referringParams.toString());
+                }
+            }
+        });
     }
+
 
     private Branch.BranchReferralInitListener branchReferralInitListener = new Branch.BranchReferralInitListener() {
         @Override
         public void onInitFinished(JSONObject linkProperties, BranchError error) {
             // do stuff with deep link data (nav to page, display content, etc)
+            if (error == null) {
+                Log.d("Response: ", linkProperties.toString());
+            }
         }
     };
+
+
+
+    public void onDestroy() {
+        super.onDestroy();
+        // logout
+        Branch.getInstance().logout();
+    }
+
 
 }
